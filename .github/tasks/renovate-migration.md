@@ -171,6 +171,8 @@ narrow the disable rules).
 
 ### 6. invest-ng, drevo-yii, lab-google-auth
 
+invest-ng and lab-google-auth were archived before their turn: skip their items.
+
 1. `renovate.json5` extending the preset (for invest-ng the base branch `master` is picked up
    automatically).
 2. drevo-yii: `{ matchFileNames: ['external/**'], enabled: false }` — vendored code is checked by
@@ -219,7 +221,7 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
 
 - Dependabot security updates off everywhere; on 2026-10-09 still on in drevo-web, ansible-hosts,
   drevo-app, SpendControl and every repository of step 8.
-- Every repository: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
+- Every repository not archived: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
 
 ## Out of scope
 
