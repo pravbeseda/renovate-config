@@ -29,6 +29,18 @@ Dependabot version updates are removed wherever the preset takes over.
 | drevo-app | main | none | active, own `renovate.json5`, **monthly, patch automerge** | gradle, custom regex |
 | SpendControl | main | none | active, own `renovate.json5`, **patch automerge** | gradle, custom regex |
 
+Added 2026-10-09 (step 8); invest-ng and lab-google-auth are archived since and need nothing:
+
+| Repository | Branch | Dependabot | Renovate | Managers |
+| --- | --- | --- | --- | --- |
+| codex-usage | main | security updates on | onboarding #1, extends `local>pravbeseda/renovate-config` | github-actions, npm |
+| monitor | main | security updates on | onboarding #70, extends `local>pravbeseda/renovate-config` | github-actions, gomod |
+| telegram-molko-bot | main | security updates on; PR #1 (esbuild) open since 2026-06-14 | onboarding #2, extends `local>pravbeseda/renovate-config` | npm |
+| kalugaman | main | security updates on; PR #45 (postcss) open since 2026-08-04 | no onboarding PR yet | github-actions, npm |
+| ali-agent-kit | main | security updates on | no onboarding PR yet | github-actions, npm |
+| home (private) | main | security updates on | no onboarding PR yet | npm |
+| antispam | main | security updates on | no onboarding PR yet | github-actions |
+
 ## Preset design
 
 `default.json` at the root of `pravbeseda/renovate-config`, referenced as
@@ -159,6 +171,8 @@ narrow the disable rules).
 
 ### 6. invest-ng, drevo-yii, lab-google-auth
 
+invest-ng and lab-google-auth were archived before their turn: skip their items.
+
 1. `renovate.json5` extending the preset (for invest-ng the base branch `master` is picked up
    automatically).
 2. drevo-yii: `{ matchFileNames: ['external/**'], enabled: false }` — vendored code is checked by
@@ -187,16 +201,33 @@ Update the comments and any docs that describe automerge (check `AGENTS.md` / `C
 Verify: Dependency Dashboard of each repo shows one non-major group per manager, separate `billing` and
 `kotlin and ksp` groups, and majors under "Pending Approval".
 
-### 8. Close-out
+### 8. Repositories outside the first wave
 
-- Dependabot security updates off in sleep-noise, drevo-web, debt-islands, invest-ng.
-- Every repository: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
+Onboarding for the preset's own owner already proposes `extends: ['local>pravbeseda/renovate-config']`,
+the same preset as `github>`, so these repositories need no PR of their own.
+
+1. Wait for the onboarding PRs of kalugaman, ali-agent-kit, home, antispam: the app already has
+   every repository, and onboarding has reached a few more of them each day since 2026-10-07. If one is
+   still missing on 2026-10-12, read that repository's job log in the Mend developer portal.
+2. Check that each onboarding PR extends only `local>pravbeseda/renovate-config`, then merge it:
+   codex-usage #1, monitor #70, telegram-molko-bot #2, and the four new ones.
+3. Close Dependabot PRs telegram-molko-bot #1 and kalugaman #45 once Renovate's PRs for the same
+   packages exist.
+4. Update `AGENTS.md` here: repositories reference the preset as `github>` or `local>`.
+
+Verify: each repository has a Dependency Dashboard listing one non-major group per manager.
+
+### 9. Close-out
+
+- Dependabot security updates off everywhere; on 2026-10-09 still on in drevo-web, ansible-hosts,
+  drevo-app, SpendControl and every repository of step 8.
+- Every repository not archived: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
 
 ## Out of scope
 
 - Lock file maintenance, custom managers for versions in scripts (gitleaks,
   actionlint, ktlint in sleep-noise) — not part of today's Dependabot behaviour.
-- Repositories without an onboarding PR or a Renovate config.
+- Repositories with no dependencies: garmin-watchface-955, MakeDrevoDB, memory, molkobot.
 
 ## Decisions
 
