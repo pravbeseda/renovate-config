@@ -4,7 +4,7 @@
     "Weekly run, any time on Saturday, Moscow time; a release is offered once it is 7 days old.",
     "Minor and patch updates: one PR per package manager. Majors: only after approval in the Dependency Dashboard.",
     "No automerge. Security fixes bypass the schedule, the release age and the approval.",
-    "npm, yarn and pnpm lock files are re-resolved in the same weekly run: Renovate fixes vulnerable direct dependencies only, and this reaches the transitive ones. Renovate applies the release age to npm's re-resolution, pnpm and yarn have settings of their own, other managers have none, so they are left out."
+    "npm, yarn and pnpm lock files are re-resolved in the same weekly run: Renovate fixes vulnerable direct dependencies only, and this reaches the transitive ones. Renovate applies the release age to npm's re-resolution (dropping it when a range already needs a younger release, which the PR body then says), pnpm and yarn have settings of their own, other managers have none, so they are left out."
   ],
   "extends": [
     "config:recommended",

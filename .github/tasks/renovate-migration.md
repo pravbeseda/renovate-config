@@ -97,14 +97,16 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   transitive dependencies get their security fixes: `vulnerabilityAlerts` reaches direct
   dependencies only. It is enabled under `npm` alone because only there does a release age hold:
   Renovate runs `npm install --before=<now minus minimumReleaseAge>`, and pnpm and yarn apply
-  their own setting where a repository has one (pnpm in drevo-web; no active repository uses yarn). Its default schedule (`before 4am on monday`)
-  overrides the top-level one, so the preset repeats it; a repository that overrides `schedule`
-  has to override `lockFileMaintenance.schedule` as well.
+  their own setting where a repository has one (pnpm in drevo-web; no active repository uses
+  yarn). Its default schedule (`before 4am on monday`) overrides the top-level one, so the preset
+  repeats it; a repository that overrides `schedule` has to override
+  `lockFileMaintenance.schedule` as well.
 - `automerge` stays at Renovate's default `false`; the preset does not mention it.
 - Repository-specific rules live in each repository's `renovate.json5` after
   `extends: ['github>pravbeseda/renovate-config']`.
 - After migration, in every repository: **Dependabot alerts on** (Renovate reads them),
-  **Dependabot security updates off** (otherwise two PRs per advisory).
+  **Dependabot security updates off** (otherwise two PRs per advisory), except drevo-yii and
+  debt-islands, where they cover the transitive dependencies (decision 8).
 
 ## Steps
 
@@ -293,6 +295,10 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    pnpm lock files), on the same Saturday schedule. For npm Renovate passes the release age as
    `npm install --before`, so decision 5's guard holds and a fix younger than 7 days waits for the
    next run (up to 14 days); it cannot land while a parent package pins the vulnerable range.
+   The guard has one gap: when a range in `package.json` already requires a release younger than
+   7 days, typically in the week after a security PR (which bypasses the age) was merged, npm
+   fails with ETARGET and Renovate re-resolves the whole tree without `--before`. The PR body then
+   says that `--before` could not be enforced; such a PR gets a closer look before merging.
    Renovate applies no release age when it re-resolves `composer.lock` or `pubspec.lock`, so
    drevo-yii and debt-islands keep Dependabot security updates on for their transitive
-   dependencies instead.
+   dependencies instead, at the cost of two PRs for an advisory on a direct dependency there.
