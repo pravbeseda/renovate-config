@@ -58,8 +58,12 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   timezone: 'Europe/Moscow',
   minimumReleaseAge: '7 days',
   lockFileMaintenance: {
-    enabled: true,
     schedule: ['* * * * 6'],
+  },
+  npm: {
+    lockFileMaintenance: {
+      enabled: true,
+    },
   },
   labels: ['dependencies'],
   packageRules: [
@@ -89,10 +93,13 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   hold back the actions bump. The Gradle wrapper joins the `gradle` PR, as in Dependabot.
 - The group rules come after `config:recommended`, so they override the monorepo groups for minor
   and patch; majors keep the monorepo grouping (e.g. all `@angular/*` majors in one PR).
-- `lockFileMaintenance` re-resolves every lock file once a week, which is how transitive
-  dependencies get their security fixes: `vulnerabilityAlerts` reaches direct dependencies only.
-  Its own default schedule (`before 4am on monday`) overrides the top-level one, so it repeats it;
-  a repository that overrides `schedule` has to override `lockFileMaintenance.schedule` as well.
+- `lockFileMaintenance` re-resolves the npm, yarn and pnpm lock files once a week, which is how
+  transitive dependencies get their security fixes: `vulnerabilityAlerts` reaches direct
+  dependencies only. It is enabled under `npm` alone because only there does a release age hold:
+  Renovate runs `npm install --before=<now minus minimumReleaseAge>`, and pnpm and yarn apply
+  their own setting where a repository has one (pnpm in drevo-web; no active repository uses yarn). Its default schedule (`before 4am on monday`)
+  overrides the top-level one, so the preset repeats it; a repository that overrides `schedule`
+  has to override `lockFileMaintenance.schedule` as well.
 - `automerge` stays at Renovate's default `false`; the preset does not mention it.
 - Repository-specific rules live in each repository's `renovate.json5` after
   `extends: ['github>pravbeseda/renovate-config']`.
@@ -227,8 +234,9 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
 
 ### 9. Close-out
 
-- Dependabot security updates off everywhere; on 2026-10-09 still on in drevo-web, ansible-hosts,
-  drevo-app, SpendControl and every repository of step 8.
+- Dependabot security updates off everywhere except drevo-yii and debt-islands (decision 8); on
+  2026-10-09 still on in drevo-web, ansible-hosts, drevo-app, SpendControl and every repository of
+  step 8.
 - Every repository not archived: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
 
 ## Out of scope
@@ -281,8 +289,10 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
 8. **Who fixes vulnerable transitive dependencies once Dependabot security updates are off?**
    `vulnerabilityAlerts` opens PRs for direct dependencies only: on 2026-10-10 kalugaman had 24 open
    alerts, all transitive, and Renovate's security PRs covered none of them.
-   **Decision:** weekly `lockFileMaintenance` in the preset, on the same Saturday schedule, with
-   Dependabot security updates off as planned. A fix waits for Saturday, and it does not land
-   while a parent package pins the vulnerable range. Renovate's `minimumReleaseAge` does not apply
-   to the re-resolved transitive versions; only a package manager's own setting holds them back,
-   as pnpm's does in drevo-web.
+   **Decision:** weekly `lockFileMaintenance` in the preset for the `npm` manager only (npm, yarn,
+   pnpm lock files), on the same Saturday schedule. For npm Renovate passes the release age as
+   `npm install --before`, so decision 5's guard holds and a fix younger than 7 days waits for the
+   next run (up to 14 days); it cannot land while a parent package pins the vulnerable range.
+   Renovate applies no release age when it re-resolves `composer.lock` or `pubspec.lock`, so
+   drevo-yii and debt-islands keep Dependabot security updates on for their transitive
+   dependencies instead.
