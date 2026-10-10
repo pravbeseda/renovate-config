@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": [
-    "Weekly run, Saturday 00:00-06:00 Moscow time; a release is offered once it is 7 days old.",
+    "Weekly run, any time on Saturday, Moscow time; a release is offered once it is 7 days old.",
     "Minor and patch updates: one PR per package manager. Majors: only after approval in the Dependency Dashboard.",
     "No automerge. Security fixes bypass the schedule, the release age and the approval."
   ],
@@ -9,7 +9,7 @@
     "config:recommended",
     ":enableVulnerabilityAlertsWithLabel(security)"
   ],
-  "schedule": ["* 0-5 * * 6"],
+  "schedule": ["* * * * 6"],
   "timezone": "Europe/Moscow",
   "minimumReleaseAge": "7 days",
   "labels": ["dependencies"],

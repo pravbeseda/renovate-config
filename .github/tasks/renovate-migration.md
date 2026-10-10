@@ -5,7 +5,7 @@
 One preset in `pravbeseda/renovate-config` that every repository extends, behaving like the
 current Dependabot setup in `sleep-noise`:
 
-- one run a week, Saturday 00:00–06:00 Moscow time;
+- one run a week, on Saturday, Moscow time;
 - all minor and patch updates of one package manager in one pull request;
 - every major in a pull request of its own, opened only when approved in the Dependency Dashboard;
 - no automerge;
@@ -54,7 +54,7 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
     'config:recommended',
     ':enableVulnerabilityAlertsWithLabel(security)',
   ],
-  schedule: ['* 0-5 * * 6'],
+  schedule: ['* * * * 6'],
   timezone: 'Europe/Moscow',
   minimumReleaseAge: '7 days',
   labels: ['dependencies'],
@@ -267,3 +267,6 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    **Decision:** Saturday 00:00–06:00 Moscow time (`schedule: ['* 0-5 * * 6']`,
    `timezone: 'Europe/Moscow'`). The Mend app does not run at exact times, so the window is several
    hours wide; without `timezone` the schedule would be read as UTC.
+   **Revised 2026-10-10:** the whole Saturday (`schedule: ['* * * * 6']`). Mend's free plan runs an
+   `onboarded` repository (no Renovate PR merged yet) only once a day, at no fixed hour, so the
+   first Saturday run after the migration missed the six-hour window.
