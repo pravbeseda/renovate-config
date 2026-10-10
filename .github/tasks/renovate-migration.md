@@ -57,6 +57,10 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   schedule: ['* * * * 6'],
   timezone: 'Europe/Moscow',
   minimumReleaseAge: '7 days',
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ['* * * * 6'],
+  },
   labels: ['dependencies'],
   packageRules: [
     {
@@ -85,6 +89,10 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   hold back the actions bump. The Gradle wrapper joins the `gradle` PR, as in Dependabot.
 - The group rules come after `config:recommended`, so they override the monorepo groups for minor
   and patch; majors keep the monorepo grouping (e.g. all `@angular/*` majors in one PR).
+- `lockFileMaintenance` re-resolves every lock file once a week, which is how transitive
+  dependencies get their security fixes: `vulnerabilityAlerts` reaches direct dependencies only.
+  Its own default schedule (`before 4am on monday`) overrides the top-level one, so it repeats it;
+  a repository that overrides `schedule` has to override `lockFileMaintenance.schedule` as well.
 - `automerge` stays at Renovate's default `false`; the preset does not mention it.
 - Repository-specific rules live in each repository's `renovate.json5` after
   `extends: ['github>pravbeseda/renovate-config']`.
@@ -225,8 +233,8 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
 
 ## Out of scope
 
-- Lock file maintenance, custom managers for versions in scripts (gitleaks,
-  actionlint, ktlint in sleep-noise) — not part of today's Dependabot behaviour.
+- Custom managers for versions in scripts (gitleaks, actionlint, ktlint in sleep-noise) — not part
+  of today's Dependabot behaviour.
 - Repositories with no dependencies: garmin-watchface-955, MakeDrevoDB, memory, molkobot.
 
 ## Decisions
@@ -270,3 +278,11 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    **Revised 2026-10-10:** the whole Saturday (`schedule: ['* * * * 6']`). Mend's free plan runs an
    `onboarded` repository (no Renovate PR merged yet) only once a day, at no fixed hour, so the
    first Saturday run after the migration missed the six-hour window.
+8. **Who fixes vulnerable transitive dependencies once Dependabot security updates are off?**
+   `vulnerabilityAlerts` opens PRs for direct dependencies only: on 2026-10-10 kalugaman had 24 open
+   alerts, all transitive, and Renovate's security PRs covered none of them.
+   **Decision:** weekly `lockFileMaintenance` in the preset, on the same Saturday schedule, with
+   Dependabot security updates off as planned. A fix waits for Saturday, and it does not land
+   while a parent package pins the vulnerable range. Renovate's `minimumReleaseAge` does not apply
+   to the re-resolved transitive versions; only a package manager's own setting holds them back,
+   as pnpm's does in drevo-web.
