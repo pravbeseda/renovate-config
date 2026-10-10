@@ -8,7 +8,7 @@ current Dependabot setup in `sleep-noise`:
 - one run a week, on Saturday, Moscow time;
 - all minor and patch updates of one package manager in one pull request;
 - every major in a pull request of its own, opened only when approved in the Dependency Dashboard;
-- no automerge;
+- no automerge (revised by decision 9: minor, patch and lock file updates merge themselves);
 - a release is offered only once it is 7 days old;
 - security fixes ignore the schedule (Renovate's `vulnerabilityAlerts`, on by default).
 
@@ -57,8 +57,10 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   schedule: ['* * * * 6'],
   timezone: 'Europe/Moscow',
   minimumReleaseAge: '7 days',
+  platformAutomerge: false,
   lockFileMaintenance: {
     schedule: ['* * * * 6'],
+    automerge: true,
   },
   npm: {
     lockFileMaintenance: {
@@ -70,6 +72,7 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
     {
       matchUpdateTypes: ['minor', 'patch', 'digest'],
       groupName: '{{manager}} non-major',
+      automerge: true,
     },
     {
       matchManagers: ['gradle-wrapper'],
@@ -102,7 +105,9 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   yarn). Its default schedule (`before 4am on monday`) overrides the top-level one, so the preset
   repeats it; a repository that overrides `schedule` has to override
   `lockFileMaintenance.schedule` as well.
-- `automerge` stays at Renovate's default `false`; the preset does not mention it.
+- Minor, patch and digest updates and lock file maintenance merge themselves (decision 9); majors
+  never do. `platformAutomerge: false` makes Renovate merge on its own run, once every check on the
+  PR is green, instead of GitHub's auto-merge, which waits only for the required checks.
 - Repository-specific rules live in each repository's `renovate.json5` after
   `extends: ['github>pravbeseda/renovate-config']`.
 - After migration, in every repository: **Dependabot alerts on** (Renovate reads them),
@@ -261,6 +266,7 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    **Decision:** move all three to the preset and drop automerge; keep only the overrides with a
    reason of their own (step 7). Keeping patch automerge would mean splitting the preset's
    non-major groups again locally.
+   **Revised 2026-10-10** by decision 9: the preset automerges every non-major update instead.
 2. **One non-major PR across all managers or one per manager?** Dependabot in sleep-noise opens one
    for Gradle and one for actions.
    **Decision:** one per manager. A breaking Gradle or npm bump must not hold back the actions bump;
@@ -304,3 +310,15 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    Renovate applies no release age when it re-resolves `composer.lock` or `pubspec.lock`, so
    drevo-yii and debt-islands keep Dependabot security updates on for their transitive
    dependencies instead, at the cost of two PRs for an advisory on a direct dependency there.
+9. **Should green non-major PRs merge themselves?**
+   **Decision:** yes, for minor, patch and digest updates and lock file maintenance, in every
+   repository including drevo-app; majors stay manual. Renovate merges them itself
+   (`platformAutomerge: false`) once every check on the PR is green: GitHub's auto-merge waits only
+   for the checks a ruleset marks as required, so one ruleset missing or out of date in any
+   repository would merge past a failing check. A repository without CI never reports green, so
+   nothing merges there. A merge waits for Renovate's next run: up to an hour in a repository with
+   a merged Renovate PR, up to a day otherwise.
+   Two accepted gaps in decision 5's guard: security PRs, which skip the release age, now reach
+   `main` without a human reading them, and so does an npm lock file refresh that ran without
+   `--before` (decision 8). In drevo-app every merge also costs billed Actions minutes and ships a
+   QA APK, so its monthly round can send the testers several builds in one day.
