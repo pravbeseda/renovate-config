@@ -88,7 +88,8 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   ticked. Security fixes are not held back: `vulnerabilityAlerts` does not require approval.
 - `minimumReleaseAge: '7 days'` is the supply-chain guard: Renovate PRs, unlike Dependabot's, run
   CI with the repository's secrets, and a compromised release is usually pulled within days.
-  Security fixes bypass it. Worst-case lag on the weekly schedule: 14 days.
+  Security fixes bypass it, and the npm lock file refresh drops it in one case (decision 8).
+  Worst-case lag on the weekly schedule: 14 days.
 - One non-major PR per manager (`groupName` accepts templates): a red Gradle or npm bump does not
   hold back the actions bump. The Gradle wrapper joins the `gradle` PR, as in Dependabot.
 - The group rules come after `config:recommended`, so they override the monorepo groups for minor
