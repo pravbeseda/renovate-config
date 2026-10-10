@@ -237,9 +237,10 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
 
 ### 9. Close-out
 
-- Dependabot security updates off everywhere except drevo-yii and debt-islands (decision 8); on
-  2026-10-09 still on in drevo-web, ansible-hosts, drevo-app, SpendControl and every repository of
-  step 8.
+- Dependabot security updates off everywhere except drevo-yii and debt-islands (decision 8).
+  Done 2026-10-10: switched off in kalugaman, home, antispam, memory, MakeDrevoDB,
+  garmin-watchface-955 and molkobot, and back on in drevo-yii and debt-islands, where they had been
+  off.
 - Every repository not archived: one Dependency Dashboard issue, no open onboarding PR, no `dependabot.yml`.
 
 ## Out of scope
