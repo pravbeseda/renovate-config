@@ -8,7 +8,7 @@ current Dependabot setup in `sleep-noise`:
 - one run a week, on Saturday, Moscow time;
 - all minor and patch updates of one package manager in one pull request;
 - every major in a pull request of its own, opened only when approved in the Dependency Dashboard;
-- no automerge (revised by decision 9: minor, patch and lock file updates merge themselves);
+- no automerge (revised by decision 9: minor, patch, digest and lock file updates merge themselves);
 - a release is offered only once it is 7 days old;
 - security fixes ignore the schedule (Renovate's `vulnerabilityAlerts`, on by default).
 
@@ -139,7 +139,7 @@ Verify: CI green; the validator rejects a deliberately broken copy.
    listed under "Pending Approval" in the Dependency Dashboard. Close the two PRs if Renovate leaves
    them open.
 
-Verify: Dependency Dashboard issue lists exactly that; no automerge happened.
+Verify: Dependency Dashboard issue lists exactly that; no automerge happened (true before decision 9).
 
 ### 3. sleep-noise (reference behaviour)
 
@@ -306,7 +306,7 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    The guard has one gap: when a range in `package.json` already requires a release younger than
    7 days, typically in the week after a security PR (which bypasses the age) was merged, npm
    fails with ETARGET and Renovate re-resolves the whole tree without `--before`. The PR body then
-   says that `--before` could not be enforced; such a PR gets a closer look before merging.
+   says that `--before` could not be enforced; since decision 9 such a PR merges itself unread.
    Renovate applies no release age when it re-resolves `composer.lock` or `pubspec.lock`, so
    drevo-yii and debt-islands keep Dependabot security updates on for their transitive
    dependencies instead, at the cost of two PRs for an advisory on a direct dependency there.
@@ -321,4 +321,7 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    Two accepted gaps in decision 5's guard: security PRs, which skip the release age, now reach
    `main` without a human reading them, and so does an npm lock file refresh that ran without
    `--before` (decision 8). In drevo-app every merge also costs billed Actions minutes and ships a
-   QA APK, so its monthly round can send the testers several builds in one day.
+   QA APK, so its monthly round can send the testers several builds in one day. The `billing`
+   groups of drevo-app and SpendControl, which their configs keep for merging by hand after the
+   purchase flow has run on a device, automerge as well: no check in CI exercises that flow, and
+   the `needs-manual-testing` label ends up on a PR that has already merged.
