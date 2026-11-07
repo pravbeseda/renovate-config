@@ -61,6 +61,7 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   lockFileMaintenance: {
     schedule: ['* * * * 6'],
     automerge: true,
+    minimumReleaseAgeBehaviour: 'timestamp-optional',
   },
   npm: {
     lockFileMaintenance: {
@@ -105,6 +106,10 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
   yarn). Its default schedule (`before 4am on monday`) overrides the top-level one, so the preset
   repeats it; a repository that overrides `schedule` has to override
   `lockFileMaintenance.schedule` as well.
+  `minimumReleaseAgeBehaviour: 'timestamp-optional'` lets its PR pass `renovate/stability-days`:
+  the update has no release timestamp, and under the default `timestamp-required` the status stays
+  pending forever, so the PR never merged itself (#11). `minimumReleaseAge` stays set, which keeps
+  `--before`; `minimumReleaseAge: null` would drop it.
 - Minor, patch and digest updates and lock file maintenance merge themselves (decision 9); majors
   never do. `platformAutomerge: false` makes Renovate merge on its own run, once every check on the
   PR is green, instead of GitHub's auto-merge, which waits only for the required checks.
