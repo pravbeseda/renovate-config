@@ -138,7 +138,7 @@ Verify: CI green; the validator rejects a deliberately broken copy.
 2. After merge, on the next Saturday run: the minor/patch PRs (#144, #145, #148, #149, #151) are
    autoclosed and replaced by one `<manager> non-major` PR per manager (releases younger than 7 days
    wait for a later run); the majors #152 and #154 are
-   listed under "Pending Approval" in the Dependency Dashboard. Close the two PRs if Renovate leaves
+   listed under "Pending Approval" in the Dependency Dashboard (before decision 10). Close the two PRs if Renovate leaves
    them open.
 
 Verify: Dependency Dashboard issue lists exactly that; no automerge happened (true before decision 9).
@@ -158,7 +158,7 @@ Verify: Dependency Dashboard issue lists exactly that; no automerge happened (tr
    so only forks fall back to the stub.
 5. Close onboarding #146 if Renovate does not close it itself.
 
-Expected: the `java-jdk` 25 major waits in the Dependency Dashboard.
+Expected: the `java-jdk` 25 major waits in the Dependency Dashboard (before decision 10).
 
 ### 4. debt-islands
 
@@ -203,7 +203,7 @@ invest-ng and lab-google-auth were archived before their turn: skip their items.
 2. drevo-yii: `{ matchFileNames: ['external/**'], enabled: false }` — vendored code is checked by
    `vendored-audit.yml`, not updated by a bot.
 3. invest-ng: close Dependabot #1 and #2 once Renovate's security PRs for the same packages exist.
-   Many majors (Angular 14 → current) wait in the Dependency Dashboard.
+   Many majors (Angular 14 → current) wait in the Dependency Dashboard (before decision 10).
 4. Close onboarding #3, #317, #2.
 
 ### 7. CurrencyEditText, drevo-app, SpendControl
@@ -224,7 +224,7 @@ preset's 7 days. Kept as local overrides:
 Update the comments and any docs that describe automerge (check `AGENTS.md` / `CLAUDE.md` in each).
 
 Verify: Dependency Dashboard of each repo shows one non-major group per manager, separate `billing` and
-`kotlin and ksp` groups, and majors under "Pending Approval".
+`kotlin and ksp` groups, and majors under "Pending Approval" (before decision 10).
 
 ### 8. Repositories outside the first wave
 
