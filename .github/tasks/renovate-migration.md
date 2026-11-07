@@ -7,7 +7,8 @@ current Dependabot setup in `sleep-noise`:
 
 - one run a week, on Saturday, Moscow time;
 - all minor and patch updates of one package manager in one pull request;
-- every major in a pull request of its own, opened only when approved in the Dependency Dashboard;
+- every major in a pull request of its own, opened only when approved in the Dependency Dashboard
+  (revised by decision 10: opened on the schedule, merged by hand);
 - no automerge (revised by decision 9: minor, patch, digest and lock file updates merge themselves);
 - a release is offered only once it is 7 days old;
 - security fixes ignore the schedule (Renovate's `vulnerabilityAlerts`, on by default).
@@ -80,16 +81,12 @@ preset is plain JSON and explains itself in its `description`. In JSON5 notation
       matchUpdateTypes: ['minor', 'patch'],
       groupName: 'gradle non-major',
     },
-    {
-      matchUpdateTypes: ['major'],
-      dependencyDashboardApproval: true,
-    },
   ],
 }
 ```
 
-- A major gets no branch, PR or CI run until its checkbox in the Dependency Dashboard issue is
-  ticked. Security fixes are not held back: `vulnerabilityAlerts` does not require approval.
+- A major opens its PR on the same schedule and never merges itself: CI runs on it, and a human
+  reads the result and merges (decision 10).
 - `minimumReleaseAge: '7 days'` is the supply-chain guard: Renovate PRs, unlike Dependabot's, run
   CI with the repository's secrets, and a compromised release is usually pulled within days.
   Security fixes bypass it, and the npm lock file refresh drops it in one case (decision 8).
@@ -265,6 +262,7 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    **Decision:** minor and patch arrive as PRs once a week; majors only after approval in the
    Dependency Dashboard. A major almost always needs a manual migration, so an unrequested PR that
    cannot go green is noise and burns CI minutes; approving everything instead would let updates pile up.
+   **Revised 2026-11-07** by decision 10: majors open their PRs without approval.
 1. **Repositories with their own config and patch automerge** (CurrencyEditText, drevo-app,
    SpendControl): move them to the preset and drop automerge, move them but keep their
    automerge and groups as local overrides, or leave them out?
@@ -330,3 +328,11 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    groups of drevo-app and SpendControl, which their configs keep for merging by hand after the
    purchase flow has run on a device, automerge as well: no check in CI exercises that flow, and
    the `needs-manual-testing` label ends up on a PR that has already merged.
+10. **Should majors still wait for approval in the Dependency Dashboard?**
+   **Decision:** no. In practice every pending major was approved in one batch and judged by its CI
+   run, so the approval filtered nothing and only delayed that run by up to a week. Majors now open their
+   PRs on the schedule and still merge only by hand (decision 9). Accepted costs: CI minutes on
+   majors that will not be taken, billed in drevo-app and drevo-android, and red majors holding
+   slots of Renovate's default limits (10 open PRs, 2 new per hour), which can delay a non-major
+   PR. A repository that wants a major held back keeps its own `dependencyDashboardApproval` rule
+   (drevo-android's Kotlin minor).

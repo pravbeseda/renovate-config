@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": [
     "Weekly run, any time on Saturday, Moscow time; a release is offered once it is 7 days old.",
-    "Minor and patch updates: one PR per package manager. Majors: only after approval in the Dependency Dashboard.",
-    "Security fixes bypass the schedule, the release age and the approval.",
+    "Minor and patch updates: one PR per package manager. Majors: their own PR (a monorepo shares one) on the same schedule, merged by hand once CI has run.",
+    "Security fixes bypass the schedule and the release age.",
     "Minor, patch and digest updates, security fixes among them, and lock file maintenance merge themselves once every check on the PR is green; Renovate merges them on its next run, not GitHub's auto-merge.",
     "npm, yarn and pnpm lock files are re-resolved in the same weekly run: Renovate fixes vulnerable direct dependencies only, and this reaches the transitive ones. Renovate applies the release age to npm's re-resolution (dropping it when a range already needs a younger release, which the PR body then says), pnpm and yarn have settings of their own, other managers have none, so they are left out. A lock file maintenance update carries no release timestamp, so its own release-age check is skipped rather than left pending forever."
   ],
@@ -36,10 +36,6 @@
       "matchManagers": ["gradle-wrapper"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "gradle non-major"
-    },
-    {
-      "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
     }
   ]
 }
