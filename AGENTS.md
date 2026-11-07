@@ -10,7 +10,7 @@ Renovate run.
 - The preset is plain JSON: Renovate resolves either reference to `default.json` and never to
   `default.json5`. The reasoning goes into the `description` array, which Renovate shows in the
   onboarding summary.
-- `.github/workflows/ci.yml` validates both configs; run its last command locally (Node 24) before
+- `.github/workflows/ci.yml` validates both configs; run its last command locally (Node 26) before
   pushing. `--no-global` matters: without it the validator checks a file passed by name as global
   config and accepts what a repository config may not contain.
 - Why the preset behaves as it does, and how each repository was moved onto it:
