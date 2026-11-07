@@ -321,6 +321,12 @@ Verify: each repository has a Dependency Dashboard listing one non-major group p
    repository would merge past a failing check. A repository without CI never reports green, so
    nothing merges there. A merge waits for Renovate's next run: up to an hour in a repository with
    a merged Renovate PR, up to a day otherwise.
+   A PR that every run refreshes never merges this way: the push restarts CI, so the run sees
+   pending checks, and the next run pushes again. Seen on the `renovate` validator in this
+   repository, which releases several times a day, and on drevo-web's lock file maintenance, which
+   re-resolves a busy npm tree; both stayed open for weeks with green CI. Accepted: such a PR is
+   merged by hand. `platformAutomerge: true` would merge it but brings back the ruleset risk above,
+   and Renovate's docs advise against `rebaseWhen: never` or `conflicted` with automerge.
    Two accepted gaps in decision 5's guard: security PRs, which skip the release age, now reach
    `main` without a human reading them, and so does an npm lock file refresh that ran without
    `--before` (decision 8). In drevo-app every merge also costs billed Actions minutes and ships a
