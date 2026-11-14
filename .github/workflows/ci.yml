@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # renovate: datasource=npm depName=renovate
-      RENOVATE_VERSION: 44.222.0
+      RENOVATE_VERSION: 44.222.1
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
